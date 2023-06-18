@@ -1,4 +1,4 @@
-public class PageEntry {
+public class PageEntry implements Comparable<PageEntry> {
     public String getPdfName() {
         return pdfName;
     }
@@ -20,5 +20,9 @@ public class PageEntry {
         this.pdfName = pdfName;
         this.page = page;
         this.count = count;
+    }
+    @Override //реализация интерфейса Comparable;
+    public int compareTo(PageEntry o) {
+        return this.count - o.count;
     }
 }

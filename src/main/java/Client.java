@@ -71,7 +71,7 @@ public class Client {
                 JSONObject jsonObject = new JSONObject(responses.get(i));
                 jsonObjects.add(jsonObject);
             }
-            Collections.sort(responses,Collections.reverseOrder());
+           // Collections.sort(responses,Collections.reverseOrder()); Почему не мог так отсортировать? НЕ приняли
             for (String r : responses) {
                 System.out.println(r);
             }

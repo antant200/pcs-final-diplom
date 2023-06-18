@@ -24,11 +24,9 @@ public class BooleanSearchEngine implements SearchEngine {
                     if (word.isEmpty()) {
                         continue;
                     }
-                    word = word.toLowerCase();
                     freqs.put(word, freqs.getOrDefault(word, 0) + 1);
                 }
                 for (var word : words) { // перебираем слова
-                    word = word.toLowerCase();
                     if (word.isEmpty()) {
                         continue;
                     }
@@ -54,6 +52,9 @@ public class BooleanSearchEngine implements SearchEngine {
 
     @Override
     public List<PageEntry> search(String word) {
-       return index.get(word);
+        word = word.toLowerCase();
+        List<PageEntry> response = index.get(word);
+        response.sort(PageEntry::compareTo);
+        return response;
     }
 }
