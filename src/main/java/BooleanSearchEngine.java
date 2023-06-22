@@ -8,16 +8,16 @@ import java.util.*;
 import java.util.List;
 
 public class BooleanSearchEngine implements SearchEngine {
-    private Map <String, List<PageEntry>> index;
+    private Map<String, List<PageEntry>> index;
 
     public BooleanSearchEngine(File pdfsDir) throws IOException {
         index = new HashMap<>();
-        File [] files = pdfsDir.listFiles();
+        File[] files = pdfsDir.listFiles();
         for (int i = 0; i < files.length; i++) {
             var doc = new PdfDocument(new PdfReader(files[i]));
-            for (int k = 1; k <doc.getNumberOfPages()+1 ; k++) {
+            for (int k = 1; k < doc.getNumberOfPages() + 1; k++) {
                 String text = PdfTextExtractor.getTextFromPage(doc.getPage(k));
-                String [] words  = text.split("\\P{IsAlphabetic}+");
+                String[] words = text.split("\\P{IsAlphabetic}+");
 
                 Map<String, Integer> freqs = new HashMap<>(); // мапа, где ключом будет слово, а значением - частота
                 for (var word : words) { // перебираем слова
@@ -30,21 +30,25 @@ public class BooleanSearchEngine implements SearchEngine {
                     if (word.isEmpty()) {
                         continue;
                     }
-                    if (index.containsKey(word)){
+                    if (index.containsKey(word)) {
                         boolean first = true;
                         for (int j = 0; j < index.get(word).size(); j++) {
                             if (index.get(word).get(j).getPdfName().equals(files[i].getName()) && index.get(word).get(j).getPage() == k) {
                                 first = false;
                             }
                         }
-                        if (first){
-                            index.get(word).add(new PageEntry(files[i].getName(),k,freqs.get(word)));
+                        if (first) {
+                            List<PageEntry> values = new ArrayList<>();
+                            values.add(new PageEntry(files[i].getName(), k, freqs.get(word)));
+                            index.get(word).add(new PageEntry(files[i].getName(), k, freqs.get(word)));
                         }
                     } else {
-                        List <PageEntry> values = new ArrayList<>();
-                        values.add(new PageEntry(files[i].getName(),k,freqs.get(word)));
-                        index.put(word,values);
+                        List<PageEntry> values = new ArrayList<>();
+                        values.add(new PageEntry(files[i].getName(), k, freqs.get(word)));
+                        index.put(word, values);
                     }
+                    List<PageEntry> response = index.get(word);
+                    response.sort(Comparator.reverseOrder());
                 }
             }
         }
@@ -52,9 +56,6 @@ public class BooleanSearchEngine implements SearchEngine {
 
     @Override
     public List<PageEntry> search(String word) {
-        word = word.toLowerCase();
-        List<PageEntry> response = index.get(word);
-        response.sort(PageEntry::compareTo);
-        return response;
+        return index.get(word.toLowerCase());
     }
 }
